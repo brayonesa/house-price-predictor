@@ -40,7 +40,7 @@ jobs:
             --input data/processed/cleaned_house_data.csv  \
             --output data/processed/featured_house_data.csv  \
             --preprocessor models/trained/preprocessor.pkl
-
+            
       - name: Setup MLflow
         run: |
           docker pull ghcr.io/mlflow/mlflow:latest
@@ -49,6 +49,11 @@ jobs:
             --backend-store-uri sqlite:///mlflow.db \
             --default-artifact-root /tmp/mlruns
 
+      - name: Debug MLflow
+        run: |
+          docker ps -a
+          docker logs mlflow-server
+        
       - name: Train the Model
         run: |
           python src/models/train_model.py  \
