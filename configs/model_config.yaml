@@ -1,10 +1,7 @@
 model:
   name: house-price-predictor
-
   target_variable: price
-
   best_model: RandomForest
-
   parameters:
     n_estimators: 100
     max_depth: 10
