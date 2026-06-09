@@ -44,10 +44,24 @@ jobs:
       - name: Setup MLflow
         run: |
           docker pull ghcr.io/mlflow/mlflow:latest
-          docker run -d -p 5555:5555 --name mlflow-server ghcr.io/mlflow/mlflow:latest \
-            mlflow server --host 0.0.0.0 \
+          docker run -d -p 5555:5000 --name mlflow-server ghcr.io/mlflow/mlflow:latest \
+            mlflow server --host 0.0.0.0 --port 5000 \
             --backend-store-uri sqlite:///mlflow.db \
             --default-artifact-root /tmp/mlruns
+
+      - name: Wait for MLflow to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost:5555/api/2.0/mlflow/experiments/list > /dev/null; then
+              echo "MLflow is ready!"
+              exit 0
+            fi
+            echo "Waiting for MLflow... ($i)"
+            sleep 2
+          done
+          echo "MLflow did not become ready in time"
+          docker logs mlflow-server
+          exit 1
 
       - name: Debug MLflow
         run: |
