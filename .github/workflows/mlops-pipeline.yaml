@@ -2,14 +2,7 @@
 name: MLOps Pipeline
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  schedule:
-    - cron: '0 0 * * 0'  # Run weekly on Sundays
-  workflow_dispatch: {}
-  
+  workflow_dispatch:
     inputs:
       run_all:
         description: 'Run all jobs'
