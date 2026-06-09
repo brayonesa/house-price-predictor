@@ -41,13 +41,11 @@ jobs:
             --output data/processed/featured_house_data.csv  \
             --preprocessor models/trained/preprocessor.pkl
             
-      - name: Setup MLflow
+      - name: Start MLflow Server
         run: |
-          docker pull ghcr.io/mlflow/mlflow:latest
-          docker run -d -p 5555:5000 --name mlflow-server ghcr.io/mlflow/mlflow:latest \
-            mlflow server --host 0.0.0.0 --port 5000 \
+          mlflow server --host 0.0.0.0 --port 5555 \
             --backend-store-uri sqlite:///mlflow.db \
-            --default-artifact-root /tmp/mlruns
+            --default-artifact-root /tmp/mlruns &
 
       - name: Wait for MLflow to be ready
         run: |
@@ -60,14 +58,8 @@ jobs:
             sleep 2
           done
           echo "MLflow did not become ready in time"
-          docker logs mlflow-server
           exit 1
-
-      - name: Debug MLflow
-        run: |
-          docker ps -a
-          docker logs mlflow-server
-        
+         
       - name: Train the Model
         run: |
           python src/models/train_model.py  \
@@ -75,9 +67,7 @@ jobs:
             --data data/processed/featured_house_data.csv  \
             --models-dir models  \
             --mlflow-tracking-uri http://localhost:5555
-      
+
       - name: Cleaning up MLflow
         run: |
-          docker stop mlflow-server
-          docker rm mlflow-server
-          docker rmi ghcr.io/mlflow/mlflow:latest
+          pkill -f "mlflow server" || true
