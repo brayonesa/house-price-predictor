@@ -1,10 +1,16 @@
 import joblib
 import pandas as pd
+from pathlib import Path
 from datetime import datetime
 from schemas import HousePredictionRequest, PredictionResponse
 
-# Load model and preprocessor
-MODEL_PATH = "models/trained/house_price_model.pkl"
+# Discover model file (any .pkl except preprocessor)
+MODEL_DIR = Path("models/trained")
+model_files = [f for f in MODEL_DIR.glob("*.pkl") if f.name != "preprocessor.pkl"]
+if not model_files:
+    raise RuntimeError(f"No model .pkl found in {MODEL_DIR}")
+MODEL_PATH = str(model_files[0])
+
 PREPROCESSOR_PATH = "models/trained/preprocessor.pkl"
 
 try:
