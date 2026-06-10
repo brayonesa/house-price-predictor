@@ -7,7 +7,7 @@ on:
       run_all:
         description: 'Run all jobs'
         required: false
-        default: 'false'
+        default: 'true'
       run_data_processing:
         description: 'Run data processing job'
         required: false
@@ -15,11 +15,11 @@ on:
       run_model_training:
         description: 'Run model training job'
         required: false
-        default: 'true'
+        default: 'false'
       run_build_and_publish:
         description: 'Run build and publish job'
         required: false
-        default: 'true'
+        default: 'false'
   release:
     types: [created]
     branches: [ main ]
@@ -133,8 +133,8 @@ jobs:
     - name: Build and test Docker image
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        docker build -t ghcr.io/${{ github.repository_owner }}/house-price-model:$COMMIT_HASH -f ./Dockerfile .
-        docker run -d -p 8000:8000 --name test-api ghcr.io/${{ github.repository_owner }}/house-price-model:$COMMIT_HASH
+        docker build -t docker.io/ ${{vars.DOCKERHUB_USERNAME }}/house-price-model:$COMMIT_HASH -f Dockerfile .
+        docker run -d -p 8000:8000 --name test-api docker.io/${{ vars.DOCKERHUB_USERNAME }}/house-price-model:$COMMIT_HASH
         for i in {1..10}; do
           curl -f http://localhost:8000/health && break || sleep 5;
         done
@@ -150,11 +150,11 @@ jobs:
       with:
         registry: docker.io
         username: ${{ vars.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
      
-    - name: Push Docker image to GHCR
+    - name: Push Docker image to DockerHub
       run: |
         COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
-        docker tag ghcr.io/${{ github.repository_owner }}/house-price-model:$COMMIT_HASH ghcr.io/${{ github.repository_owner }}/house-price-model:latest
-        docker push ghcr.io/${{ github.repository_owner }}/house-price-model:$COMMIT_HASH
-        docker push ghcr.io/${{ github.repository_owner }}/house-price-model:latest
+        docker tag docker.io/${{ vars.DOCKERHUB_USERNAME }}/house-price-model:$COMMIT_HASH docker.io/${{ vars.DOCKERHUB_USERNAME }}/house-price-model:latest
+        docker push docker.io/${{ vars.DOCKERHUB_USERNAME }}/house-price-model:$COMMIT_HASH
+        docker push docker.io/${{ vars.DOCKERHUB_USERNAME }}/house-price-model:latest
