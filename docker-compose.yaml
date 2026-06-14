@@ -1,13 +1,13 @@
 services:
   fastapi: 
-    image: fastapi:dev
+    image: brianfss/fastapi:dev
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - 8000:8000
   streamlit:
-    image: streamlit:dev
+    image: brianfss/streamlit:dev
     build:
       context: ./streamlit_app
       dockerfile: Dockerfile
