@@ -1,8 +1,9 @@
 name: MLops CI
 
-on: 
-    workflow_dispatch: {}
-
+on:
+  push:
+    branches:
+      - main
 jobs:
   e2e_mlops_workflow:
     runs-on: ubuntu-latest
