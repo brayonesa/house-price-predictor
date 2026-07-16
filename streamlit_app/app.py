@@ -8,12 +8,12 @@ import socket  # For hostname and IP address
 # Set the page configuration (must be the first Streamlit command)
 st.set_page_config(
     page_title="House Price Predictor",
-    layout="wide",
+    layout="wide",|
     initial_sidebar_state="collapsed"
 )
 
 # Add title and description
-st.title("House Price Prediction")
+st.title("House Price Prediction - v2")
 st.markdown(
     """
     <p style="font-size: 18px; color: gray;">
